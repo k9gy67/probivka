@@ -1,4 +1,31 @@
 from colorama import init, Fore, Style
+import phonenumbers
+from phonenumbers import geocoder
+from phonenumbers import carrier
+from phonenumbers import timezone
+def get_phonenumber(number):
+    r = "ID"
+    parsed_number = phonenumbers.parse("+" + number, r)
+    region_code = phonenumbers.region_code_for_number(parsed_number)
+    jenis_provider = carrier.name_for_number(parsed_number, "en")
+    location = geocoder.description_for_number(parsed_number, "id")
+    is_valid_number = phonenumbers.is_valid_number(parsed_number)
+    is_possible_number = phonenumbers.is_possible_number(parsed_number)
+    formatted_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+    formatted_number_for_mobile = phonenumbers.format_number_for_mobile_dialing(parsed_number, r, with_formatting=True)
+    number_type = phonenumbers.number_type(parsed_number)
+    timezone1 = timezone.time_zones_for_number(parsed_number)
+    timezoneF = ', '.join(timezone1)
+    phone_info = f"""Код региона: {region_code}
+Оператор: {jenis_provider}
+Местоположение: {location}
+Действительный номер: {is_valid_number}
+Возможный номер: {is_possible_number}
+Форматированный номер (Международный): {formatted_number}
+Форматированный номер для мобильного набора: {formatted_number_for_mobile}
+Тип номера: {number_type}
+Временные зоны: {timezoneF}"""
+    print(f"{phone_info}")
 
 print(Fore.GREEN + """
             000   00     000       000     00              0000000000000000
@@ -629,39 +656,15 @@ elif num == "17":
     import sys
     sys.exit()
 elif num == "15":
-    import phonenumbers
-    from phonenumbers import geocoder, carrier, NumberParseException
+    get_phonenumber(input("Номер телефона: "))
+    ()
     import time
-
-    def analyze_phone_number(number, default_region='RU'):
-        try:
-            parsed_number = phonenumbers.parse(number, default_region)
-            if not phonenumbers.is_valid_number(parsed_number):
-                return "Некорректный номер или он недействителен."
-            
-            country = geocoder.description_for_number(parsed_number, 'ru')
-            city_or_region = geocoder.description_for_number(parsed_number, 'ru')
-            operator = carrier.name_for_number(parsed_number, 'ru')
-            
-            return {
-                "номер": number,
-                "валиден": True,
-                "страна": country,
-                "город/регион": city_or_region,
-                "оператор": operator
-            }
-        except NumberParseException as e:
-            return f"Ошибка анализа номера: {e}"
-
-    phone_input = input("Введите номер телефона: ")
-    result = analyze_phone_number(phone_input)
-    print(result)
     time.sleep(10)
-    print
-
+    import sys
+    sys.exit()
 elif num == "16":
     import time
-    print("ты мрахота тупая будешь впитывать сои оскорбления как твоя мать еду с холодильника блять пидр ты ебучий у которого семьи нету олух")
+    print("ты мразота тупая будешь впитывать сои оскорбления как твоя мать еду с холодильника блять пидр ты ебучий у которого семьи нету олух")
     time.sleep(10)
     print
 else:
