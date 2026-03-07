@@ -1,32 +1,89 @@
 from colorama import init, Fore, Style
-import phonenumbers
-from phonenumbers import geocoder
-from phonenumbers import carrier
-from phonenumbers import timezone
-def get_phonenumber(number):
-    r = "ID"
-    parsed_number = phonenumbers.parse("+" + number, r)
-    region_code = phonenumbers.region_code_for_number(parsed_number)
-    jenis_provider = carrier.name_for_number(parsed_number, "en")
-    location = geocoder.description_for_number(parsed_number, "id")
-    is_valid_number = phonenumbers.is_valid_number(parsed_number)
-    is_possible_number = phonenumbers.is_possible_number(parsed_number)
-    formatted_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
-    formatted_number_for_mobile = phonenumbers.format_number_for_mobile_dialing(parsed_number, r, with_formatting=True)
-    number_type = phonenumbers.number_type(parsed_number)
-    timezone1 = timezone.time_zones_for_number(parsed_number)
-    timezoneF = ', '.join(timezone1)
-    phone_info = f"""Код региона: {region_code}
-Оператор: {jenis_provider}
-Местоположение: {location}
-Действительный номер: {is_valid_number}
-Возможный номер: {is_possible_number}
-Форматированный номер (Международный): {formatted_number}
-Форматированный номер для мобильного набора: {formatted_number_for_mobile}
-Тип номера: {number_type}
-Временные зоны: {timezoneF}"""
-    print(f"{phone_info}")
 
+def format_result(data: str):
+    print(data)
+
+def search_by_htmlweb(phone: str):
+    import requests
+    url = f"https://htmlweb.ru/geo/api.php?json&telcod={phone}"
+    res = requests.get(url, timeout=10)
+    data = res.json()
+
+    if '0' in data:
+        info = data['0']
+        country = data.get("country", {}).get("name", "Не найдено")
+        region = data.get("region", {}).get("name", "Не найдено")
+        operator = info.get("oper", "Не найдено")
+        telcod = info.get("telcod", "Не найдено")
+        latitude = info.get("latitude", "Не найдено")
+        longitude = info.get("longitude", "Не найдено")
+        time_zone = info.get("time_zone", "Не найдено")
+        tz = info.get("tz", "Не найдено")
+        mobile = "Мобильный" if info.get("mobile", False) else "Стационарный"
+        operator_brand = info.get("oper_brand", "Не найдено")
+        def_range = info.get("def", "Не найдено")
+        country_fullname = data.get("country", {}).get("fullname", "Не найдено")
+        country_english = data.get("country", {}).get("english", "Не найдено")
+        country_code3 = data.get("country", {}).get("country_code3", "Не найдено")
+        country_iso = data.get("country", {}).get("iso", "Не найдено")
+        country_telcod = data.get("country", {}).get("telcod", "Не найдено")
+        country_location = data.get("country", {}).get("location", "Не найдено")
+        country_capital = data.get("country", {}).get("capital", "Не найдено")
+        country_mcc = data.get("country", {}).get("mcc", "Не найдено")
+        country_lang = data.get("country", {}).get("lang", "Не найдено")
+        country_langcod = data.get("country", {}).get("langcod", "Не найдено")
+        region_id = data.get("region", {}).get("id", "Не найдено")
+        region_okrug = data.get("region", {}).get("okrug", "Не найдено")
+        region_autocod = data.get("region", {}).get("autocod", "Не найдено")
+        region_capital = data.get("region", {}).get("capital", "Не найдено")
+        region_english = data.get("region", {}).get("english", "Не найдено")
+        region_iso = data.get("region", {}).get("iso", "Не найдено")
+
+        result = f"""
+ ██▓███   ▄▄▄       ██▀███   ▄▄▄      ▓█████▄  ▒█████  ▒██   ██▒
+▓██░  ██▒▒████▄    ▓██ ▒ ██▒▒████▄    ▒██▀ ██▌▒██▒  ██▒▒▒ █ █ ▒░
+▓██░ ██▓▒▒██  ▀█▄  ▓██ ░▄█ ▒▒██  ▀█▄  ░██   █▌▒██░  ██▒░░  █   ░
+▒██▄█▓▒ ▒░██▄▄▄▄██ ▒██▀▀█▄  ░██▄▄▄▄██ ░▓█▄   ▌▒██   ██░ ░ █ █ ▒ 
+▒██▒ ░  ░ ▓█   ▓██▒░██▓ ▒██▒ ▓█   ▓██▒░▒████▓ ░ ████▓▒░▒██▒ ▒██▒
+▒▓▒░ ░  ░ ▒▒   ▓▒█░░ ▒▓ ░▒▓░ ▒▒   ▓▒█░ ▒▒▓  ▒ ░ ▒░▒░▒░ ▒▒ ░ ░▓ ░
+░▒ ░       ▒   ▒▒ ░  ░▒ ░ ▒░  ▒   ▒▒ ░ ░ ▒  ▒   ░ ▒ ▒░ ░░   ░▒ ░
+░░         ░   ▒     ░░   ░   ░   ▒    ░ ░  ░ ░ ░ ░ ▒   ░    ░  
+               ░  ░   ░           ░  ░   ░        ░ ░   ░    ░  
+                                       ░  
+
+[!]запрос -> {phone}                                               
+[+]Страна -> {country}
+[+]Полное название страны -> {country_fullname}
+[+]Название страны на английском -> {country_english}
+[+]Код страны (3 символа) -> {country_code3}
+[+]ISO код страны -> {country_iso}
+[+]Телефонный код страны: ->{country_telcod}
+[+]Локация страны -> {country_location}
+[+]Столица страны -> {country_capital}
+[+]MCC страны -> {country_mcc}
+[+]Язык страны -> {country_lang}
+[+]Код языка страны -> {country_langcod}
+[+]Регион -> {region}
+[+]ID региона -> {region_id}
+[+]Округ региона -> {region_okrug}
+[+]Автокод региона -> {region_autocod}
+[+]Столица региона -> {region_capital}
+[+]Название региона на английском: {region_english}
+[+]ISO код региона -> {region_iso}
+[+]Оператор -> {operator}
+[+]Код оператора -> {telcod}
+[+]Широта -> {latitude}
+[+]Долгота -> {longitude}
+[+]Часовой пояс -> {time_zone}
+[+]Временная зона -> {tz}
+[+]Тип -> {mobile}
+[+]Бренд оператора -> {operator_brand}
+[+]Диапазон DEF -> {def_range}                                                                                                                                   
+"""
+        return result
+    else:
+        return "Данных по номеру не найдено."
+    
 print(Fore.GREEN + """
             000   00     000       000     00              0000000000000000
             000  00      000       000     00              000          000
@@ -656,16 +713,16 @@ elif num == "17":
     import sys
     sys.exit()
 elif num == "15":
-    get_phonenumber(input("Номер телефона: "))
-    ()
     import time
+    phone_number = input("введите номер телефона: ")
+    result = search_by_htmlweb(phone_number)
+    format_result(result)
     time.sleep(10)
-    import sys
-    sys.exit()
+    
 elif num == "16":
     import time
-    print("ты мразота тупая будешь впитывать сои оскорбления как твоя мать еду с холодильника блять пидр ты ебучий у которого семьи нету олух")
+    print("ты мразота тупая будешь впитывать мои оскорбления как твоя мать еду с холодильника блять пидр ты ебучий у которого семьи нету олух")
     time.sleep(10)
     print
 else:
-    print("[?]не известная команда!")
+    print("[?]не известная команда!") 
