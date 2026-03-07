@@ -27,7 +27,7 @@ if num == "1":
           доступные соцсети:
           телеграм
           тик ток
-          гугл(поиск во всех соцсетях)
+          гугл(поиск во всех соцсетях) 
           или вы можете сделать поиск по номеру телефона(чтобы это сделать введите слово телефон)
           """)
     soc = input("введите соцсеть или введите слово телефон: ")
@@ -559,6 +559,7 @@ elif num == "7":
     print(f"Модель машины: {machine}")
     print("hello world")
 elif num == "8":
+    import os
     os.system('start ADGuardVPN.exe')
 elif num == "9":
     print("название: kula")
@@ -612,6 +613,7 @@ elif num == "13":
     label.pack(pady=20)
     root.mainloop()
 elif num == "14":
+    import os
     os.system('cmd')
 elif num == "16":
     import sys
@@ -620,26 +622,29 @@ elif num == "15":
     import phonenumbers
     from phonenumbers import geocoder, carrier, NumberParseException
 
-def analyze_phone_number(number, default_region='RU'):
-    try:
-        parsed_number = phonenumbers.parse(number, default_region)
-        if not phonenumbers.is_valid_number(parsed_number):
-            return "Некорректный номер или он недействителен."
-        
-        country = geocoder.description_for_number(parsed_number, 'ru')
-        city_or_region = geocoder.description_for_number(parsed_number, 'ru')
-        operator = carrier.name_for_number(parsed_number, 'ru')
-        
-        return {
-            "номер": number,
-            "валиден": True,
-            "страна": country,
-            "город/регион": city_or_region,
-            "оператор": operator
-        }
-    except NumberParseException as e:
-        return f"Ошибка анализа номера: {e}"
+    def analyze_phone_number(number, default_region='RU'):
+        try:
+            parsed_number = phonenumbers.parse(number, default_region)
+            if not phonenumbers.is_valid_number(parsed_number):
+                return "Некорректный номер или он недействителен."
+            
+            country = geocoder.description_for_number(parsed_number, 'ru')
+            city_or_region = geocoder.description_for_number(parsed_number, 'ru')
+            operator = carrier.name_for_number(parsed_number, 'ru')
+            
+            return {
+                "номер": number,
+                "валиден": True,
+                "страна": country,
+                "город/регион": city_or_region,
+                "оператор": operator
+            }
+        except NumberParseException as e:
+            return f"Ошибка анализа номера: {e}"
 
-phone_input = input("Введите номер телефона: ")
-result = analyze_phone_number(phone_input)
-print(result)
+    phone_input = input("Введите номер телефона: ")
+    result = analyze_phone_number(phone_input)
+    print(result)
+
+else:
+    print("не известная команда!")
