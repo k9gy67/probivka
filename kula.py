@@ -2,6 +2,24 @@ from colorama import init, Fore, Style
 from telethon import TelegramClient
 import requests
 from bs4 import BeautifulSoup
+import requests
+
+def get_ip_info(ip):
+    url = f"https://ipinfo.io/{ip}/json"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Информация по IP: {ip}")
+            print(f"Область: {data.get('region', 'Не указано')}")
+            print(f"Город: {data.get('city', 'Не указано')}")
+            print(f"Страна: {data.get('country', 'Не указано')}")
+            print(f"Провайдер: {data.get('org', 'Не указано')}")
+            print(f"Точный геоданные: {data.get('loc', 'Не указано')}")
+        else:
+            print(f"Ошибка: Не удалось получить данные (статус {response.status_code})")
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
 
 def get_public_tg_info(username: str):
     url = f"https://t.me/{username}"
@@ -126,7 +144,7 @@ print(Fore.GREEN + """
 | [7] - информация о себе   [8] - vpn   [9] - информация о инструменте   [10] - бомбер сообщениями    |
 | [11] - установить библиотеку если через pip install не получается   [12] - майнер   [13] -          |
 | cоздать окно   [14] - windows cmd(например если у вас линукс)   [15] - поиск по номеру  [16] -      |
-| троллинг   [17] - поиск по тг   [18] - выход                                                        |
+| троллинг   [17] - поиск по тг   [19] - поиск по IP   [20] - выход                                   |
 |_____________________________________________________________________________________________________|
       """)
 num = input("[?] введите номер функции: ") 
@@ -750,8 +768,11 @@ elif num == "16":
     print("ты мразота тупая будешь впитывать мои оскорбления как твоя мать еду с холодильника блять пидр ты ебучий у которого семьи нету олух")
     time.sleep(10)
     print
-elif num == "18":
+elif num == "20":
     import sys
     sys.exit()
+elif num == "19":
+    ip_address = input("Введите IP-адрес: ")
+    get_ip_info(ip_address)
 else:
     print("[?]не известная команда!") 
