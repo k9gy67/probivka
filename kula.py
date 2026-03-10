@@ -20,6 +20,166 @@ if sys.platform == "win32":
     hwnd = ctypes.windll.kernel32.GetConsoleWindow()
     ctypes.windll.user32.ShowWindow(hwnd, 3)  
 
+def dedosint():
+    import requests
+import phonenumbers
+from phonenumbers import geocoder, carrier, timezone
+from geopy.geocoders import Nominatim
+from colorama import init, Fore, Style
+import re
+
+try:
+    import dns.resolver
+except ImportError:
+    dns = None
+
+init(autoreset=True)
+
+def detect_email_type(email):
+    domain = email.lower().split('@')[-1] if email else ''
+    email_types = {
+        'gmail.com': 'Gmail', 'yahoo.com': 'Yahoo', 'outlook.com': 'Outlook',
+        'hotmail.com': 'Outlook', 'mail.ru': 'Mail.ru', 'yandex.ru': 'Yandex',
+        'icloud.com': 'iCloud', 'protonmail.com': 'ProtonMail', 'aol.com': 'AOL',
+        'zoho.com': 'Zoho'
+    }
+    return email_types.get(domain, 'Другой')
+
+def validate_email(email):
+    return bool(re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email))
+
+def get_info_by_ip(ip):
+    try:
+        response = requests.get(f'http://ip-api.com/json/{ip}', timeout=5).json()
+        if response.get('status') == 'fail':
+            print(Fore.BLUE + Style.BRIGHT + "Неверный IP")
+            return
+
+        data = {
+            'IP': response.get('query', 'Неизвестно'),
+            'Страна': response.get('country', 'Неизвестно'),
+            'Город': response.get('city', 'Неизвестно'),
+            'Регион': response.get('regionName', 'Неизвестно'),
+            'Организация': response.get('org', 'Неизвестно'),
+            'Провайдер': response.get('isp', 'Неизвестно'),
+            'Домен IP': response.get('as', 'Неизвестно')
+        }
+
+        for key, value in data.items():
+            print(Fore.BLUE + Style.BRIGHT + f"{key}: {value}")
+
+    except requests.RequestException:
+        print(Fore.BLUE + Style.BRIGHT + "Ошибка соединения")
+
+def get_info_by_phone(phone):
+    try:
+        parsed = phonenumbers.parse(phone)
+        data = {
+            'Номер': phone,
+            'Страна': geocoder.description_for_number(parsed, 'ru'),
+            'Оператор': carrier.name_for_number(parsed, 'ru'),
+            'Часовые пояса': ', '.join(timezone.time_zones_for_number(parsed)),
+            'Тип': phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.INTERNATIONAL),
+            'Нац. формат': phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.NATIONAL),
+            'Код региона': parsed.country_code,
+            'Тип номера': phonenumbers.number_type(parsed),
+            'Локация': geocoder.region_code_for_number(parsed)
+        }
+
+        geolocation = Nominatim(user_agent="phone_lookup")
+        geo_info = geolocation.geocode(data['Страна'])
+        data['Город'] = geo_info.address if geo_info else 'Неизвестно'
+        data['Координаты'] = f"Широта: {geo_info.latitude}, Долгота: {geo_info.longitude}" if geo_info else 'Неизвестно'
+
+        for key, value in data.items():
+            print(Fore.BLUE + Style.BRIGHT + f"{key}: {value}")
+
+        # Добавим ссылки на поиск в соцсетях
+        print(Fore.BLUE + Style.BRIGHT + "\n🔍 Возможные ссылки на соцсети:")
+        search_links = {
+            "Facebook": f"https://www.facebook.com/search/top?q={phone}",
+            "Instagram": f"https://www.instagram.com/{phone}",
+            "VK": f"https://vk.com/search?c[q]={phone}&c[section]=people",
+            "TikTok": f"https://www.tiktok.com/search?q={phone}",
+            "LinkedIn": f"https://www.linkedin.com/search/results/all/?keywords={phone}",
+            "Twitter (X)": f"https://twitter.com/search?q={phone}",
+            "Snapchat": f"https://www.snapchat.com/add/{phone}",
+            "Telegram": f"https://t.me/{phone}",
+            "WhatsApp": f"https://wa.me/{phone}",
+            "Viber": f"viber://add?number={phone}",
+            "Skype": f"skype:{phone}?chat",
+            "Pinterest": f"https://www.pinterest.com/search/people/?q={phone}",
+            "Reddit": f"https://www.reddit.com/search/?q={phone}"
+        }
+
+        for name, url in search_links.items():
+            print(Fore.BLUE + Style.BRIGHT + f"{name}: {url}")
+
+    except phonenumbers.NumberParseException:
+        print(Fore.BLUE + Style.BRIGHT + "Неверный формат номера")
+    except Exception:
+        print(Fore.BLUE + Style.BRIGHT + "Ошибка обработки")
+
+def get_info_by_email(email):
+    try:
+        if not validate_email(email):
+            print(Fore.BLUE + Style.BRIGHT + "Неверный формат email")
+            return
+
+        print(Fore.BLUE + Style.BRIGHT + f"Email: {email}")
+        print(Fore.BLUE + Style.BRIGHT + f"Тип: {detect_email_type(email)}")
+        print(Fore.BLUE + Style.BRIGHT + f"Домен: {email.split('@')[-1]}")
+
+        if dns:
+            try:
+                mx_records = dns.resolver.resolve(email.split('@')[-1], 'MX')
+                print(Fore.BLUE + Style.BRIGHT + "MX-записи:")
+                for mx in mx_records:
+                    print(Fore.BLUE + Style.BRIGHT + f" - {mx.exchange}")
+            except Exception:
+                print(Fore.BLUE + Style.BRIGHT + "MX-записи недоступны")
+        else:
+            print(Fore.BLUE + Style.BRIGHT + "Установите dnspython для MX-записей")
+
+    except Exception:
+        print(Fore.BLUE + Style.BRIGHT + "Ошибка обработки")
+
+def display_menu():
+    banner = Fore.BLUE + Style.BRIGHT + r"""
+▓█████▄ ▓█████ ▄▄▄      ▓█████▄     ▒█████    ██████  ██▓ ███▄    █ ▄▄▄█████▓
+▒██▀ ██▌▓█   ▀▒████▄    ▒██▀ ██▌   ▒██▒  ██▒▒██    ▒ ▓██▒ ██ ▀█   █ ▓  ██▒ ▓▒
+░██   █▌▒███  ▒██  ▀█▄  ░██   █▌   ▒██░  ██▒░ ▓██▄   ▒██▒▓██  ▀█ ██▒▒ ▓██░ ▒░
+░▓█▄   ▌▒▓█  ▄░██▄▄▄▄██ ░▓█▄   ▌   ▒██   ██░  ▒   ██▒░██░▓██▒  ▐▌██▒░ ▓██▓ ░ 
+░▒████▓ ░▒████▒▓█   ▓██▒░▒████▓    ░ ████▓▒░▒██████▒▒░██░▒██░   ▓██░  ▒██▒ ░ 
+ ▒▒▓  ▒ ░░ ▒░ ░▒▒   ▓▒█░ ▒▒▓  ▒    ░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░░▓  ░ ▒░   ▒ ▒   ▒ ░░   
+ ░ ▒  ▒  ░ ░  ░ ▒   ▒▒ ░ ░ ▒  ▒      ░ ▒ ▒░ ░ ░▒  ░ ░ ▒ ░░ ░░   ░ ▒░    ░    
+ ░ ░  ░    ░    ░   ▒    ░ ░  ░    ░ ░ ░ ▒  ░  ░  ░   ▒ ░   ░   ░ ░   ░      
+   ░       ░  ░     ░  ░   ░           ░ ░        ░   ░           ░          
+ ░                       ░                                                   
+"""
+    print(banner)
+
+    while True:
+        print(Fore.BLUE + Style.BRIGHT + "\n1 - Поиск по номеру")
+        print(Fore.BLUE + Style.BRIGHT + "2 - Поиск по почте")
+        print(Fore.BLUE + Style.BRIGHT + "3 - Поиск по IP")
+
+        choice = input(Fore.BLUE + Style.BRIGHT + "Ответ: ")
+
+        if choice == '1':
+            phone = input(Fore.BLUE + Style.BRIGHT + "Введите номер: ")
+            get_info_by_phone(phone)
+        elif choice == '2':
+            email = input(Fore.BLUE + Style.BRIGHT + "Введите email: ")
+            get_info_by_email(email)
+        elif choice == '3':
+            ip = input(Fore.BLUE + Style.BRIGHT + "Введите IP: ")
+            get_info_by_ip(ip)
+        elif choice == '0':
+            break
+        else:
+            print(Fore.BLUE + Style.BRIGHT + "Неверный выбор")
+
 def anubis():
     while True:
      try:
@@ -815,7 +975,7 @@ def get_public_tg_info(username: str):
     title = soup.find("meta", property="og:title")
     full_name = title["content"] if title else "Не указано"
 
-    desc = soup.find("meta", property="og:description")
+    desc = soup.find("meta", property="og:description") 
     bio = desc["content"] if desc else "Нет биографии"
 
     has_photo = bool(soup.find("img", class_="tgme_page_photo_image"))
@@ -925,7 +1085,7 @@ multiline_text = """
 | [7] - информация о себе   [8] - vpn   [9] - информация о инструменте   [10] - бомбер сообщениями    |
 | [11] - установить библиотеку если через pip install не получается   [12] - майнер   [13] - cmd      |
 | [14] - поиск по номеру   [15] - троллинг  [16] - поиск по тг-юзернейму   [17] - поиск по IP         |
-| [18] - запустить Anubis   [19] - выход                                                              |
+| [18] - запустить Anubis   [19] - запустить DeadOsint   [20] - выход                                 |
 |_____________________________________________________________________________________________________|"""
 import os
 os.system('cls')
@@ -1551,10 +1711,15 @@ elif num == "16":
     usr = input("Введите Telegram‑юзернейм (без @): ").strip().lstrip("@")
     get_public_tg_info(usr)
     time.sleep(10)
-elif num == "19":
+elif num == "20":
     import sys
     sys.exit()
 elif num == "18":
     anubis()
+elif num == "19":
+    import os
+    os.system('cls')
+    dedosint()
+    display_menu()
 else:
     print("[?]не известная команда!") 
