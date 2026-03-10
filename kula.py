@@ -6,6 +6,8 @@ import requests
 import ctypes
 import sys
 import shutil
+import pystyle
+from pystyle import Colorate, Colors
 
 def print_multiline_centered(text):
     size = shutil.get_terminal_size()
@@ -1091,7 +1093,7 @@ import os
 os.system('cls')
 print_multiline_centered(multiline_text)
 
-num = input("[?] введите номер функции: ") 
+num = pystyle.Write.Input("[?] введите номер функции: ", pystyle.Colors.green, interval=0.005)
 if num == "1":
     import webbrowser
     print(Fore.GREEN + """
