@@ -1065,7 +1065,10 @@ def search_by_htmlweb(phone: str):
 [+]Временная зона -> {tz}
 [+]Тип -> {mobile}
 [+]Бренд оператора -> {operator_brand}
-[+]Диапазон DEF -> {def_range}                                                                                                                                   
+[+]Диапазон DEF -> {def_range}               
+[+] Telegram -> https://t.me/{phone}
+[+] Whatsapp -> https://wa.me/{phone}
+[+] Viber -> https://viber.click/{phone}                                                                                                                    
 """
         return result
     else:
