@@ -1074,6 +1074,29 @@ def search_by_htmlweb(phone: str):
     else:
         return "Данных по номеру не найдено."
     
+def get_info_by_email(email):
+    try:
+        if not validate_email(email):
+            print(Fore.BLUE + Style.BRIGHT + "Неверный формат email")
+            return
+
+        print(Fore.BLUE + Style.BRIGHT + f"Email: {email}")
+        print(Fore.BLUE + Style.BRIGHT + f"Тип: {detect_email_type(email)}")
+        print(Fore.BLUE + Style.BRIGHT + f"Домен: {email.split('@')[-1]}")
+
+        if dns:
+            try:
+                mx_records = dns.resolver.resolve(email.split('@')[-1], 'MX')
+                print(Fore.BLUE + Style.BRIGHT + "MX-записи:")
+                for mx in mx_records:
+                    print(Fore.BLUE + Style.BRIGHT + f" - {mx.exchange}")
+            except Exception:
+                print(Fore.BLUE + Style.BRIGHT + "MX-записи недоступны")
+        else:
+            print(Fore.BLUE + Style.BRIGHT + "Установите dnspython для MX-записей")
+
+    except Exception:
+        print(Fore.BLUE + Style.BRIGHT + "Ошибка обработки")
 
 pystyle.Write.Print(pystyle.Center.XCenter('''
                                                               
@@ -1092,7 +1115,7 @@ pystyle.Write.Print(pystyle.Center.XCenter('''
 | [7] - информация о себе   [8] - vpn   [9] - информация о инструменте   [10] - бомбер сообщениями    |
 | [11] - установить библиотеку если через pip install не получается   [12] - майнер   [13] - cmd      |
 | [14] - поиск по номеру   [15] - троллинг  [16] - поиск по тг-юзернейму   [17] - поиск по IP         |
-| [18] - запустить Anubis   [19] - запустить DeadOsint   [20] - выход                                 |
+| [18] - поиск по почте   [19] - запустить Anubis   [20] - запустить DeadOsint   [21] - выход         |
 |_____________________________________________________________________________________________________|
                                                                       
                                                                       
@@ -1736,15 +1759,20 @@ elif num == "16":
     usr = input("Введите Telegram‑юзернейм (без @): ").strip().lstrip("@")
     get_public_tg_info(usr)
     time.sleep(10)
-elif num == "20":
+elif num == "21":
     import sys
     sys.exit()
-elif num == "18":
-    anubis()
 elif num == "19":
+    anubis()
+elif num == "20":
     import os
     os.system('cls')
     dedosint()
     display_menu()
+elif num == "18":
+    import time
+    email = input(Fore.RED + Style.BRIGHT + "Введите email: ")
+    get_info_by_email(email)
+    time.sleep(20)
 else:
-    print("[?]не известная команда!") 
+    print("[?]не известная команда!")
