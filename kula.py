@@ -1098,7 +1098,19 @@ def get_info_by_email(email):
     except Exception:
         print(Fore.BLUE + Style.BRIGHT + "Ошибка обработки")
 
-pystyle.Write.Print(pystyle.Center.XCenter('''
+def get_public_ip():
+    try:
+        response = requests.get('https://api.ipify.org?format=text')
+        if response.status_code == 200:
+            return response.text
+        else:
+            return "Не удалось получить IP"
+    except Exception as e:
+        return f"Ошибка: {e}"
+
+ip = get_public_ip()
+
+pystyle.Write.Print(pystyle.Center.XCenter(f'''
                                                               
                000   00     000       000     00              0000000000000000
                000  00      000       000     00              000          000
@@ -1117,7 +1129,7 @@ pystyle.Write.Print(pystyle.Center.XCenter('''
 | [14] - поиск по номеру   [15] - троллинг  [16] - поиск по тг-юзернейму   [17] - поиск по IP         |
 | [18] - поиск по почте   [19] - запустить Anubis   [20] - запустить DeadOsint   [21] - выход         |
 |_____________________________________________________________________________________________________|
-                                                                      
+by k9gy   price:FREE   IP:{ip}                                                                      
                                                                       
                                                                       \n'''), pystyle.Colors.white_to_red, interval = 0.0005)  
 
@@ -1132,7 +1144,7 @@ if num == "1":
           или вы можете сделать поиск по номеру телефона(чтобы это сделать введите слово телефон)
           """)
     soc = input("введите соцсеть или введите слово телефон: ")
-    if soc == "телеграмм":
+    if soc == "телеграм":
         nic = input("введите юзернейм: ")
         search_url = f"https://www.google.com/search?q=telegramm {nic}"
         webbrowser.open(search_url)
